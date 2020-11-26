@@ -1,1 +1,16 @@
+server:
+  port: 8081
 
+spring:
+  application:
+    name: plcae-api
+  profiles:
+    active: local
+
+---
+spring:
+  profiles: local
+  r2dbc:
+    url: r2dbc:mysql://localhost/common?serverTimezone=Asia/Seoul&useSSL=false
+    username: cmuser
+    password: qwer1234!

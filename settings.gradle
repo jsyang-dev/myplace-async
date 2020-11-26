@@ -1,0 +1,2 @@
+rootProject.name = 'myplace'
+include 'place-api'

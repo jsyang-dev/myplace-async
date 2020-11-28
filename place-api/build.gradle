@@ -1,33 +1,32 @@
 plugins {
-	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.2'
-	runtimeOnly 'dev.miku:r2dbc-mysql'
-	runtimeOnly 'mysql:mysql-connector-java'
-	testRuntimeOnly 'com.h2database:h2'
-	testRuntimeOnly 'io.r2dbc:r2dbc-h2'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.2'
+    runtimeOnly 'mysql:mysql-connector-java'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 sourceSets {
-	main.java.srcDir querydslDir
+    main.java.srcDir querydslDir
 }
 configurations {
-	querydsl.extendsFrom compileClasspath }
+    querydsl.extendsFrom compileClasspath
+}
 compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+    options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝

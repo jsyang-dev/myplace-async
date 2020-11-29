@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -15,4 +17,11 @@ import javax.persistence.Entity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Holiday extends BaseEntity {}
+public class Holiday extends BaseEntity {
+
+  // 일자
+  @Column private LocalDate date;
+
+  // 공휴일명
+  @Column private String name;
+}

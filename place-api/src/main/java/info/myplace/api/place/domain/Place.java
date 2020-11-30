@@ -1,6 +1,5 @@
 package info.myplace.api.place.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import java.util.Set;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Place extends BaseEntity {
 
   // 장소명
@@ -46,11 +45,14 @@ public class Place extends BaseEntity {
   private String special;
 
   @OneToMany(mappedBy = "place")
+  @Builder.Default
   private Set<PlaceTag> placeTags = new HashSet<>();
 
   @OneToMany(mappedBy = "place")
+  @Builder.Default
   private Set<PlaceHour> placeHours = new HashSet<>();
 
   @OneToMany(mappedBy = "place")
+  @Builder.Default
   private Set<PlaceFee> placeFees = new HashSet<>();
 }

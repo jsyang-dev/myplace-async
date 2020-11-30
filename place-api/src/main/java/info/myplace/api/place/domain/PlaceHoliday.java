@@ -1,7 +1,6 @@
 package info.myplace.api.place.domain;
 
 import info.myplace.api.place.constant.HolidayType;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +22,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PlaceHoliday extends BaseEntity {
 
   // 휴무일명

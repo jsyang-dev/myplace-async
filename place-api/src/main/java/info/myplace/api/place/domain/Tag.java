@@ -1,6 +1,5 @@
 package info.myplace.api.place.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,12 +17,13 @@ import java.util.Set;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Tag extends BaseEntity {
 
   // 태그명
   @Column private String name;
 
   @OneToMany(mappedBy = "tag")
+  @Builder.Default
   private Set<PlaceTag> placeTags = new HashSet<>();
 }

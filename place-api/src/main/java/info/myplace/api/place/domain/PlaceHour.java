@@ -1,7 +1,6 @@
 package info.myplace.api.place.domain;
 
 import info.myplace.api.place.constant.DayType;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +22,7 @@ import java.time.LocalTime;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PlaceHour extends BaseEntity {
 
   // 시작일

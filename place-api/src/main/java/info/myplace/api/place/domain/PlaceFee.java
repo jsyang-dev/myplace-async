@@ -1,6 +1,5 @@
 package info.myplace.api.place.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PlaceFee extends BaseEntity {
 
   // 연령대명

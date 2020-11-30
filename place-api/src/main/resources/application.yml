@@ -4,13 +4,6 @@ server:
 spring:
   application:
     name: plcae-api
-  profiles:
-    active: local
-
----
-
-spring:
-  profiles: local
   jpa:
     hibernate:
       ddl-auto: update

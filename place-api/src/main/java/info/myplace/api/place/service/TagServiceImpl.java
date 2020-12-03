@@ -7,6 +7,7 @@ import info.myplace.api.place.mapper.TagMapper;
 import info.myplace.api.place.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +17,8 @@ public class TagServiceImpl implements TagService {
   private final TagMapper tagMapper;
 
   @Override
-  public TagDto create(TagDto tagDto) {
-
-    Tag tag = tagMapper.toEntity(tagDto);
-    tagRepository.save(tag);
-
-    return tagMapper.toDto(tag);
+  public Mono<TagDto> create(TagDto tagDto) {
+    return Mono.just(tagMapper.toEntity(tagDto)).map(tagRepository::save).map(tagMapper::toDto);
   }
 
   @Override

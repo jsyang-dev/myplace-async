@@ -1,10 +1,11 @@
 package info.myplace.api.place.service;
 
 import info.myplace.api.place.dto.TagDto;
+import reactor.core.publisher.Mono;
 
 public interface TagService {
 
-  TagDto create(TagDto tagDto);
+  Mono<TagDto> create(TagDto tagDto);
 
   TagDto get(long id);
 }

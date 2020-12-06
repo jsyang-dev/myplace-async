@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,11 +34,16 @@ class TagServiceTest {
       TagDto tagDto = TagDto.builder().name("태그").build();
 
       // When
-      TagDto savedTagDto = tagService.create(tagDto);
+      Mono<TagDto> tagDtoMono = tagService.create(tagDto);
 
       // Then
-      assertThat(savedTagDto.getId()).isNotNull();
-      assertThat(savedTagDto.getName()).isEqualTo(tagDto.getName());
+      StepVerifier.create(tagDtoMono)
+          .assertNext(
+              t -> {
+                assertThat(t.getId()).isNotNull();
+                assertThat(t.getName()).isEqualTo(tagDto.getName());
+              })
+          .verifyComplete();
     }
   }
 

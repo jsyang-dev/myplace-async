@@ -1,12 +1,12 @@
 package info.myplace.api.place.service;
 
-import info.myplace.api.place.domain.Tag;
 import info.myplace.api.place.dto.TagDto;
 import info.myplace.api.place.exception.TagNotFoundException;
 import info.myplace.api.place.mapper.TagMapper;
 import info.myplace.api.place.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -22,9 +22,13 @@ public class TagServiceImpl implements TagService {
   }
 
   @Override
-  public TagDto get(long id) {
+  public Mono<TagDto> get(long id) {
+    return Mono.just(tagRepository.findById(id).orElseThrow(() -> new TagNotFoundException(id)))
+        .map(tagMapper::toDto);
+  }
 
-    Tag tag = tagRepository.findById(id).orElseThrow(() -> new TagNotFoundException(id));
-    return tagMapper.toDto(tag);
+  @Override
+  public Flux<TagDto> getByKeyword(String keyword) {
+    return Flux.fromIterable(tagRepository.findByNameStartsWith(keyword)).map(tagMapper::toDto);
   }
 }

@@ -11,4 +11,6 @@ public interface TagService {
   Mono<TagDto> get(long id);
 
   Flux<TagDto> getByKeyword(String keyword);
+
+  void delete(long id);
 }

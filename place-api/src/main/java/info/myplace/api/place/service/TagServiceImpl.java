@@ -31,4 +31,9 @@ public class TagServiceImpl implements TagService {
   public Flux<TagDto> getByKeyword(String keyword) {
     return Flux.fromIterable(tagRepository.findByNameStartsWith(keyword)).map(tagMapper::toDto);
   }
+
+  @Override
+  public void delete(long id) {
+    tagRepository.deleteById(id);
+  }
 }

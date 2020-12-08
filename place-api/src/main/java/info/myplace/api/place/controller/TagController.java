@@ -4,6 +4,7 @@ import info.myplace.api.place.dto.TagDto;
 import info.myplace.api.place.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +46,10 @@ public class TagController {
     return tagService.getByKeyword(keyword);
     //        .map(ResponseEntity::ok)
     //        .defaultIfEmpty(ResponseEntity.noContent().build());
+  }
+
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable long id) {
+    tagService.delete(id);
   }
 }

@@ -29,7 +29,7 @@ class TagControllerTest {
   class Create {
 
     @Test
-    @DisplayName("dto를 요청받아 저장하고 dto를 리턴한다")
+    @DisplayName("dto를 요청받아서 저장하고 dto를 리턴한다")
     void create() {
 
       // Given
@@ -56,7 +56,7 @@ class TagControllerTest {
   class Get {
 
     @Test
-    @DisplayName("id를 요청받아서 dto를 리턴한다")
+    @DisplayName("id를 요청받아서 조회한 dto를 리턴한다")
     void get() {
 
       // Given
@@ -78,7 +78,7 @@ class TagControllerTest {
     }
 
     @Test
-    @DisplayName("keyword를 요청받아서 dto를 리턴한다")
+    @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
     void getByKeyword() {
 
       // Given
@@ -99,6 +99,29 @@ class TagControllerTest {
 
       // Then
       responseSpec.expectStatus().isOk().expectBody().jsonPath("$", hasSize(2));
+    }
+  }
+
+  @Nested
+  @DisplayName("DELETE /tag 요청은")
+  class Delete {
+
+    @Test
+    @DisplayName("dto를 요청받아서 entity를 삭제한다")
+    void delete() {
+
+      // Given
+      Tag tag = tagRepository.save(Tag.builder().name("태그").build());
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient.delete().uri("/tag/{id}", tag.getId()).exchange();
+
+      // Then
+      responseSpec.expectStatus().isOk();
+      if (tagRepository.findById(tag.getId()).isPresent()) {
+        throw new AssertionError("Test failed");
+      }
     }
   }
 }

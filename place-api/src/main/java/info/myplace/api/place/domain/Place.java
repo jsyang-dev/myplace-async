@@ -31,10 +31,10 @@ public class Place extends BaseEntity {
   @Column private String imageUrl;
 
   // 추천수
-  @Column private int recommendCount;
+  @Column private Integer recommendCount;
 
   // 조회수
-  @Column private int readCount;
+  @Column private Integer readCount;
 
   // 설명
   @Column(columnDefinition = "text")

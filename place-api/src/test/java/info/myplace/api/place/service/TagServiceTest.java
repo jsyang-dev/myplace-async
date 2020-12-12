@@ -93,7 +93,11 @@ class TagServiceTest {
           .hasMessageContaining("유효한 Tag가 존재하지 않습니다")
           .hasMessageContaining(String.valueOf(id));
     }
+  }
 
+  @Nested
+  @DisplayName("getByKeyword 메소드는")
+  class GetByKeyword {
     @Test
     @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
     void getByKeyword() {

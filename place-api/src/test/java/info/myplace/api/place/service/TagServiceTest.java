@@ -3,6 +3,7 @@ package info.myplace.api.place.service;
 import info.myplace.api.place.domain.Tag;
 import info.myplace.api.place.dto.TagDto;
 import info.myplace.api.place.exception.TagNotFoundException;
+import info.myplace.api.place.mapper.TagMapper;
 import info.myplace.api.place.repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -25,6 +30,7 @@ class TagServiceTest {
 
   @Autowired private TagService tagService;
   @Autowired private TagRepository tagRepository;
+  @Autowired private TagMapper tagMapper;
 
   @BeforeEach
   void setUp() {
@@ -98,16 +104,19 @@ class TagServiceTest {
   @Nested
   @DisplayName("getByKeyword 메소드는")
   class GetByKeyword {
+
     @Test
     @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
     void getByKeyword() {
 
       // Given
-      Tag tag = tagRepository.save(Tag.builder().name("태그1").build());
-      tagRepository.save(Tag.builder().name("태그2").build());
+      List<TagDto> tagDtos =
+          Arrays.asList(TagDto.builder().name("태그1").build(), TagDto.builder().name("태그2").build());
+
+      tagRepository.saveAll(tagDtos.stream().map(tagMapper::toEntity).collect(Collectors.toList()));
 
       // When
-      Flux<TagDto> tagDtoFlux = tagService.getByKeyword(tag.getName().substring(0, 1));
+      Flux<TagDto> tagDtoFlux = tagService.getByKeyword(tagDtos.get(0).getName().substring(0, 1));
 
       // Then
       StepVerifier.create(tagDtoFlux).expectNextCount(2).verifyComplete();

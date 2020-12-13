@@ -1,7 +1,7 @@
 package info.myplace.api.place.service;
 
-import info.myplace.api.place.domain.Holiday;
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,6 +14,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,6 +27,7 @@ class HolidayServiceTest {
 
   @Autowired private HolidayService holidayService;
   @Autowired private HolidayRepository holidayRepository;
+  @Autowired private HolidayMapper holidayMapper;
 
   @Nested
   @DisplayName("create 메소드는")
@@ -60,18 +64,23 @@ class HolidayServiceTest {
     void getListByYear() {
 
       // Given
-      holidayRepository.save(
-          Holiday.builder().date(LocalDate.of(2017, 5, 9)).name("제19대 대통령선거").build());
-      holidayRepository.save(Holiday.builder().date(LocalDate.of(1900, 3, 1)).name("삼일절").build());
-      holidayRepository.save(
-          Holiday.builder().date(LocalDate.of(2020, 4, 15)).name("제21대 국회의원선거").build());
+      List<HolidayDto> holidayDtos =
+          Arrays.asList(
+              HolidayDto.builder().date(LocalDate.of(2017, 5, 9)).name("제19대 대통령선거").build(),
+              HolidayDto.builder().date(LocalDate.of(1900, 3, 1)).name("삼일절").build(),
+              HolidayDto.builder().date(LocalDate.of(2020, 4, 15)).name("제21대 국회의원선거").build());
+
+      holidayRepository.saveAll(
+          holidayDtos.stream().map(holidayMapper::toEntity).collect(Collectors.toList()));
 
       // When
       Flux<HolidayDto> holidayDtoFlux = holidayService.getList(2020);
 
       // Then
-      // TODO: 내용 검증
-      StepVerifier.create(holidayDtoFlux).expectNextCount(2).verifyComplete();
+      StepVerifier.create(holidayDtoFlux)
+          .expectNextMatches(holidayDtos::contains)
+          .expectNextMatches(holidayDtos::contains)
+          .verifyComplete();
     }
 
     @Test

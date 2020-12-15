@@ -13,8 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -39,7 +44,7 @@ class TagControllerTest {
     void create() {
 
       // Given
-      TagDto tagDto = TagDto.builder().name("태그").build();
+      TagDto tagDto = TagDto.builder().id(1L).name("태그").build();
       given(tagService.create(tagDto)).willReturn(Mono.just(tagDto));
 
       // When
@@ -53,6 +58,8 @@ class TagControllerTest {
           .expectHeader()
           .contentType(MediaType.APPLICATION_JSON)
           .expectBody()
+          .jsonPath("$.id")
+          .isEqualTo(tagDto.getId())
           .jsonPath("$.name")
           .isEqualTo(tagDto.getName());
 
@@ -60,77 +67,84 @@ class TagControllerTest {
     }
   }
 
-  //  @Nested
-  //  @DisplayName("GET /tag 요청은")
-  //  class Get {
-  //
-  //    @Test
-  //    @DisplayName("id를 요청받아서 조회한 dto를 리턴한다")
-  //    void get() {
-  //
-  //      // Given
-  //      Tag tag = tagRepository.save(Tag.builder().name("태그").build());
-  //
-  //      // When
-  //      WebTestClient.ResponseSpec responseSpec =
-  //          webTestClient.get().uri("/tag/{id}", tag.getId()).exchange();
-  //
-  //      // Then
-  //      responseSpec
-  //          .expectStatus()
-  //          .isOk()
-  //          .expectBody()
-  //          .jsonPath("$.id")
-  //          .isEqualTo(tag.getId())
-  //          .jsonPath("$.name")
-  //          .isEqualTo(tag.getName());
-  //    }
-  //
-  //    @Test
-  //    @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
-  //    void getByKeyword() {
-  //
-  //      // Given
-  //      Tag tag = tagRepository.save(Tag.builder().name("태그1").build());
-  //      tagRepository.save(Tag.builder().name("태그2").build());
-  //
-  //      // When
-  //      WebTestClient.ResponseSpec responseSpec =
-  //          webTestClient
-  //              .get()
-  //              .uri(
-  //                  uriBuilder ->
-  //                      uriBuilder
-  //                          .path("/tag")
-  //                          .queryParam("keyword", tag.getName().substring(0, 1))
-  //                          .build())
-  //              .exchange();
-  //
-  //      // Then
-  //      responseSpec.expectStatus().isOk().expectBody().jsonPath("$", hasSize(2));
-  //    }
-  //  }
-  //
-  //  @Nested
-  //  @DisplayName("DELETE /tag 요청은")
-  //  class Delete {
-  //
-  //    @Test
-  //    @DisplayName("dto를 요청받아서 entity를 삭제한다")
-  //    void delete() {
-  //
-  //      // Given
-  //      Tag tag = tagRepository.save(Tag.builder().name("태그").build());
-  //
-  //      // When
-  //      WebTestClient.ResponseSpec responseSpec =
-  //          webTestClient.delete().uri("/tag/{id}", tag.getId()).exchange();
-  //
-  //      // Then
-  //      responseSpec.expectStatus().isOk();
-  //      if (tagRepository.findById(tag.getId()).isPresent()) {
-  //        throw new AssertionError("Test failed");
-  //      }
-  //    }
-  //  }
+  @Nested
+  @DisplayName("GET /tag 요청은")
+  class Get {
+
+    @Test
+    @DisplayName("id를 요청받아서 조회한 dto를 리턴한다")
+    void get() {
+
+      // Given
+      TagDto tagDto = TagDto.builder().id(1L).name("태그").build();
+      given(tagService.get(tagDto.getId())).willReturn(Mono.just(tagDto));
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient.get().uri("/tag/{id}", tagDto.getId()).exchange();
+
+      // Then
+      responseSpec
+          .expectStatus()
+          .isOk()
+          .expectHeader()
+          .contentType(MediaType.APPLICATION_JSON)
+          .expectBody()
+          .jsonPath("$.id")
+          .isEqualTo(tagDto.getId())
+          .jsonPath("$.name")
+          .isEqualTo(tagDto.getName());
+    }
+
+    @Test
+    @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
+    void getByKeyword() {
+
+      // Given
+      List<TagDto> tagDtos =
+          Arrays.asList(
+              TagDto.builder().id(1L).name("태그1").build(),
+              TagDto.builder().id(2L).name("태그2").build());
+      given(tagService.getByKeyword(tagDtos.get(0).getName().substring(0, 1)))
+          .willReturn(Flux.fromIterable(tagDtos));
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .get()
+              .uri(
+                  uriBuilder ->
+                      uriBuilder
+                          .path("/tag")
+                          .queryParam("keyword", tagDtos.get(0).getName().substring(0, 1))
+                          .build())
+              .exchange();
+
+      // Then
+      responseSpec
+          .expectStatus()
+          .isOk()
+          .expectHeader()
+          .contentType(MediaType.APPLICATION_JSON)
+          .expectBody()
+          .jsonPath("$", hasSize(2));
+    }
+  }
+
+  @Nested
+  @DisplayName("DELETE /tag 요청은")
+  class Delete {
+
+    @Test
+    @DisplayName("dto를 요청받아서 entity를 삭제한다")
+    void delete() {
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient.delete().uri("/tag/{id}", 1L).exchange();
+
+      // Then
+      responseSpec.expectStatus().isOk().expectBody().isEmpty();
+    }
+  }
 }

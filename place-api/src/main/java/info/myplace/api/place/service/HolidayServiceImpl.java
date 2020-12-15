@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Service
 @RequiredArgsConstructor
@@ -26,19 +27,28 @@ public class HolidayServiceImpl implements HolidayService {
 
   @Override
   public Flux<HolidayDto> getList(int year) {
+    return getHolidayDtoFlux(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
+  }
 
-    Flux<HolidayDto> commonHolidayDtoFlux =
-        Flux.fromIterable(
-                holidayRepository.findByPeriod(
-                    LocalDate.of(1900, 1, 1), LocalDate.of(1900, 12, 31)))
-            .map(holidayMapper::toDto);
+  @Override
+  public Flux<HolidayDto> getList(int year, int month) {
+    return getHolidayDtoFlux(
+        LocalDate.of(year, month, 1), YearMonth.of(year, month).atEndOfMonth());
+  }
 
-    Flux<HolidayDto> holidayDtoFlux =
-        Flux.fromIterable(
-                holidayRepository.findByPeriod(
-                    LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31)))
-            .map(holidayMapper::toDto);
+  @Override
+  public Flux<HolidayDto> getList(int year, int month, int day) {
+    return getHolidayDtoFlux(LocalDate.of(year, month, day), LocalDate.of(year, month, day));
+  }
 
-    return Flux.concat(commonHolidayDtoFlux, holidayDtoFlux);
+  private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {
+    return Flux.concat(
+        getHolidayDtoFluxByPeriod(startDate, endDate),
+        getHolidayDtoFluxByPeriod(startDate.withYear(1900), endDate.withYear(1900)));
+  }
+
+  private Flux<HolidayDto> getHolidayDtoFluxByPeriod(LocalDate startDate, LocalDate endDate) {
+    return Flux.fromIterable(holidayRepository.findByPeriod(startDate, endDate))
+        .map(holidayMapper::toDto);
   }
 }

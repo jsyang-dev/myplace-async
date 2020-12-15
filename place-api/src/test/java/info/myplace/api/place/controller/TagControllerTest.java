@@ -40,7 +40,7 @@ class TagControllerTest {
   class Create {
 
     @Test
-    @DisplayName("dto를 요청받아서 저장하고 dto를 리턴한다")
+    @DisplayName("dto를 입력받아서 저장하고 dto를 리턴한다")
     void create() {
 
       // Given
@@ -72,7 +72,7 @@ class TagControllerTest {
   class Get {
 
     @Test
-    @DisplayName("id를 요청받아서 조회한 dto를 리턴한다")
+    @DisplayName("id를 입력받아서 조회한 dto를 리턴한다")
     void get() {
 
       // Given
@@ -97,7 +97,7 @@ class TagControllerTest {
     }
 
     @Test
-    @DisplayName("keyword를 요청받아서 조회한 dto 리스트를 리턴한다")
+    @DisplayName("keyword를 입력받아서 조회한 dto 리스트를 리턴한다")
     void getByKeyword() {
 
       // Given
@@ -136,7 +136,7 @@ class TagControllerTest {
   class Delete {
 
     @Test
-    @DisplayName("dto를 요청받아서 entity를 삭제한다")
+    @DisplayName("dto를 입력받아서 entity를 삭제한다")
     void delete() {
 
       // When

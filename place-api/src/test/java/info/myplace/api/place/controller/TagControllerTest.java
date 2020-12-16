@@ -62,8 +62,6 @@ class TagControllerTest {
           .isEqualTo(tagDto.getId())
           .jsonPath("$.name")
           .isEqualTo(tagDto.getName());
-
-      verify(tagService, times(1)).create(any());
     }
   }
 

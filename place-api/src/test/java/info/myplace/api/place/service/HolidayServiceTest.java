@@ -1,5 +1,6 @@
 package info.myplace.api.place.service;
 
+import info.myplace.api.place.domain.Holiday;
 import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
@@ -129,6 +130,40 @@ class HolidayServiceTest {
 
       // Then
       StepVerifier.create(holidayDtoFlux).expectNextMatches(holidayDtos::contains).verifyComplete();
+    }
+  }
+
+  @Nested
+  @DisplayName("update 메소드는")
+  class Update {
+
+    @Test
+    @DisplayName("dto를 입력받아서 수정하고 dto를 리턴한다")
+    void update() {
+
+      // Given
+      Holiday holiday = Holiday.builder().date(LocalDate.now()).name("공휴일").build();
+      HolidayDto holidayDto = holidayMapper.toDto(holidayRepository.save(holiday));
+      holidayDto.setDate(LocalDate.of(1900, 3, 1));
+      holidayDto.setName("삼일절");
+
+      // When
+      Mono<HolidayDto> holidayDtoMono = holidayService.update(holiday.getId(), holidayDto);
+
+      // Then
+      StepVerifier.create(holidayDtoMono)
+          .assertNext(
+              t -> {
+                assertThat(t.getId()).isEqualTo(holiday.getId());
+                assertThat(t.getDate()).isEqualTo(holidayDto.getDate());
+                assertThat(t.getName()).isEqualTo(holidayDto.getName());
+              })
+          .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 요청받아서 예외를 발생한다")
+    void holidayNotFoundException() {
     }
   }
 }

@@ -28,7 +28,7 @@ public class TagController {
   public Mono<ResponseEntity<TagDto>> create(@RequestBody TagDto tagDto) {
     return tagService
         .create(tagDto)
-        .map(t -> ResponseEntity.created(URI.create("/tag" + t.getId())).body(t))
+        .map(t -> ResponseEntity.created(URI.create("/tag/" + t.getId())).body(t))
         .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 

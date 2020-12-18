@@ -1,5 +1,6 @@
 package info.myplace.api.place.domain;
 
+import info.myplace.api.place.dto.HolidayDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,4 +24,10 @@ public class Holiday extends BaseEntity {
 
   // 공휴일명
   @Column private String name;
+
+  public Holiday update(HolidayDto holidayDto) {
+    this.setDate(holidayDto.getDate());
+    this.setName(holidayDto.getName());
+    return this;
+  }
 }

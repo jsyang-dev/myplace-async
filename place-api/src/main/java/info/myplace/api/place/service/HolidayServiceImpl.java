@@ -1,10 +1,13 @@
 package info.myplace.api.place.service;
 
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.exception.HolidayNotFoundException;
+import info.myplace.api.place.exception.TagNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +22,7 @@ public class HolidayServiceImpl implements HolidayService {
   private final HolidayMapper holidayMapper;
 
   @Override
+  @Transactional
   public Mono<HolidayDto> create(HolidayDto holidayDto) {
     return Mono.just(holidayMapper.toEntity(holidayDto))
         .map(holidayRepository::save)
@@ -39,6 +43,15 @@ public class HolidayServiceImpl implements HolidayService {
   @Override
   public Flux<HolidayDto> getList(int year, int month, int day) {
     return getHolidayDtoFlux(LocalDate.of(year, month, day), LocalDate.of(year, month, day));
+  }
+
+  @Override
+  @Transactional
+  public Mono<HolidayDto> update(long id, HolidayDto holidayDto) {
+    return Mono.just(
+            holidayRepository.findById(id).orElseThrow(() -> new HolidayNotFoundException(id)))
+        .map(holiday -> holiday.update(holidayDto))
+        .map(holidayMapper::toDto);
   }
 
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {

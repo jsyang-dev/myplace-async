@@ -107,4 +107,41 @@ class HolidayControllerTest {
           .jsonPath("$", hasSize(2));
     }
   }
+
+  @Nested
+  @DisplayName("PUT /holiday 요청은")
+  class Update {
+
+    @Test
+    @DisplayName("id와 dto를 입력받아서 수정하고 dto를 리턴한다")
+    void update() {
+
+      // Given
+      HolidayDto holidayDto = HolidayDto.builder().id(1L).date(LocalDate.now()).name("공휴일").build();
+      given(holidayService.update(holidayDto.getId(), holidayDto))
+          .willReturn(Mono.just(holidayDto));
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .put()
+              .uri("/holiday/{id}", holidayDto.getId())
+              .body(Mono.just(holidayDto), HolidayDto.class)
+              .exchange();
+
+      // Then
+      responseSpec
+          .expectStatus()
+          .isOk()
+          .expectHeader()
+          .contentType(MediaType.APPLICATION_JSON)
+          .expectBody()
+          .jsonPath("$.id")
+          .isEqualTo(holidayDto.getId())
+          .jsonPath("$.date")
+          .isEqualTo(holidayDto.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+          .jsonPath("$.name")
+          .isEqualTo(holidayDto.getName());
+    }
+  }
 }

@@ -4,6 +4,7 @@ import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.service.HolidayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,5 +47,10 @@ public class HolidayController {
         .update(id, holidayDto)
         .map(ResponseEntity::ok)
         .defaultIfEmpty(ResponseEntity.noContent().build());
+  }
+
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable long id) {
+    holidayService.delete(id);
   }
 }

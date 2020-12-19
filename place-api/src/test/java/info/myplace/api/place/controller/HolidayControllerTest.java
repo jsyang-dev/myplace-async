@@ -144,4 +144,21 @@ class HolidayControllerTest {
           .isEqualTo(holidayDto.getName());
     }
   }
+
+  @Nested
+  @DisplayName("DELETE /holiday 요청은")
+  class Delete {
+
+    @Test
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
+    void delete() {
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient.delete().uri("/holiday/{id}", 1L).exchange();
+
+      // Then
+      responseSpec.expectStatus().isOk().expectBody().isEmpty();
+    }
+  }
 }

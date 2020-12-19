@@ -131,7 +131,7 @@ class TagControllerTest {
   class Delete {
 
     @Test
-    @DisplayName("dto를 입력받아서 entity를 삭제한다")
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
     void delete() {
 
       // When

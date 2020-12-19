@@ -2,7 +2,6 @@ package info.myplace.api.place.service;
 
 import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.exception.HolidayNotFoundException;
-import info.myplace.api.place.exception.TagNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +51,11 @@ public class HolidayServiceImpl implements HolidayService {
             holidayRepository.findById(id).orElseThrow(() -> new HolidayNotFoundException(id)))
         .map(holiday -> holiday.update(holidayDto))
         .map(holidayMapper::toDto);
+  }
+
+  @Override
+  public void delete(long id) {
+    holidayRepository.deleteById(id);
   }
 
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {

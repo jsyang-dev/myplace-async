@@ -181,4 +181,26 @@ class HolidayServiceTest {
           .hasMessageContaining(String.valueOf(id));
     }
   }
+
+  @Nested
+  @DisplayName("delete 메소드는")
+  class Delete {
+
+    @Test
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
+    void delete() {
+
+      // Given
+      Holiday holiday =
+          holidayRepository.save(Holiday.builder().date(LocalDate.now()).name("공휴일").build());
+
+      // When
+      holidayService.delete(holiday.getId());
+
+      // Then
+      if (holidayRepository.findById(holiday.getId()).isPresent()) {
+        throw new AssertionError("Test failed");
+      }
+    }
+  }
 }

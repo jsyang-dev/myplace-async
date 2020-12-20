@@ -203,4 +203,23 @@ class HolidayServiceTest {
       }
     }
   }
+
+  @Nested
+  @DisplayName("generate 메소드는")
+  class Generate {
+
+    @Test
+    @DisplayName("연도를 입력받아서 리스트를 생성하고 리턴한다")
+    void generate() {
+
+      // Given
+      int year = 2020;
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year);
+
+      // Then
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
+    }
+  }
 }

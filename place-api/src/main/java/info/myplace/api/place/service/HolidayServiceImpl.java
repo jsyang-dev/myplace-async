@@ -58,6 +58,11 @@ public class HolidayServiceImpl implements HolidayService {
     holidayRepository.deleteById(id);
   }
 
+  @Override
+  public Flux<HolidayDto> generate(int year) {
+    return Flux.just(HolidayDto.builder().build());
+  }
+
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {
     return Flux.concat(
         getHolidayDtoFluxByPeriod(startDate, endDate),

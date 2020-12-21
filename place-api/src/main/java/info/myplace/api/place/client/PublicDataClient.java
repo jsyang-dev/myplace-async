@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PublicDataClient {
@@ -22,8 +23,15 @@ public class PublicDataClient {
   }
 
   public Flux<HolidayDto> getHolidayList(int year) {
-    return null;
-    //    return webClient.get().uri("/getRestDeInfo", ResponseDto.class).exchange();
+    webClient.get().uri("/getRestDeInfo").exchange();
+    //        .flatMap(
+    //            clientResponse -> {
+    //                clientResponse
+    //                    .bodyToFlux(ResponseDto.class)
+    //                    .map(r -> r.getResponse().getBody().getResult().toDtoFlux());
+    //                return Flux.just(HolidayDto.builder().build());
+    //            });
+    return Flux.just(HolidayDto.builder().build());
   }
 
   @Getter
@@ -71,6 +79,14 @@ public class PublicDataClient {
 
       @JsonProperty("item")
       private List<Item> items;
+
+      public Flux<HolidayDto> toDtoFlux() {
+        List<HolidayDto> holidayDtos = new ArrayList<>();
+        for (Item item : this.getItems()) {
+          holidayDtos.add(new HolidayDto(item.getDay(), item.getDateName()));
+        }
+        return Flux.fromIterable(holidayDtos);
+      }
     }
 
     @Getter

@@ -24,4 +24,9 @@ public class HolidayDto {
   @NotNull private LocalDate date;
 
   @NotBlank private String name;
+
+  public HolidayDto(@NotNull LocalDate date, @NotBlank String name) {
+    this.date = date;
+    this.name = name;
+  }
 }

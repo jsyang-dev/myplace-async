@@ -3,7 +3,10 @@ package info.myplace.api.place.client;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import info.myplace.api.place.dto.HolidayDto;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
@@ -11,27 +14,43 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PublicDataClient {
+@Component
+public class HolidayClient {
+
+  @Value("${app.api.holiday.key}")
+  private String key;
 
   private final WebClient webClient;
 
-  public PublicDataClient(WebClient.Builder webClientBuilder) {
-    this.webClient =
-        webClientBuilder
-            .baseUrl("http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService")
-            .build();
+  public HolidayClient(
+      WebClient.Builder webClientBuilder, @Value("${app.api.holiday.url}") String url) {
+    this.webClient = webClientBuilder.baseUrl(url).build();
   }
 
-  public Flux<HolidayDto> getHolidayList(int year) {
-    webClient.get().uri("/getRestDeInfo").exchange();
-    //        .flatMap(
-    //            clientResponse -> {
-    //                clientResponse
-    //                    .bodyToFlux(ResponseDto.class)
-    //                    .map(r -> r.getResponse().getBody().getResult().toDtoFlux());
-    //                return Flux.just(HolidayDto.builder().build());
-    //            });
-    return Flux.just(HolidayDto.builder().build());
+  public Flux<HolidayDto> getHolidayList(Integer year) {
+    return getHolidayList(year, null);
+  }
+
+  public Flux<HolidayDto> getHolidayList(Integer year, Integer month) {
+    return webClient
+        .get()
+        .uri(
+            uriBuilder ->
+                UriComponentsBuilder.fromUri(uriBuilder.path("/getRestDeInfo").build())
+                    .queryParam("solYear", year)
+                    .queryParam("solMonth", month)
+                    .queryParam("ServiceKey", key)
+                    .queryParam("_type", "json")
+                    .queryParam("numOfRows", 100)
+                    .build(true)
+                    .toUri())
+        .exchange()
+        .flatMap(
+            clientResponse ->
+                clientResponse
+                    .bodyToMono(ResponseDto.class)
+                    .map(responseDto -> responseDto.getResponse().getBody().getResult().toDtos()))
+        .flatMapMany(Flux::fromIterable);
   }
 
   @Getter
@@ -40,7 +59,7 @@ public class PublicDataClient {
     private Response response;
 
     @Getter
-    public class Response {
+    public static class Response {
 
       private Header header;
 
@@ -48,7 +67,7 @@ public class PublicDataClient {
     }
 
     @Getter
-    public class Header {
+    public static class Header {
 
       // 결과코드
       private String resultCode;
@@ -58,7 +77,7 @@ public class PublicDataClient {
     }
 
     @Getter
-    public class Body {
+    public static class Body {
 
       // 결과
       @JsonProperty("items")
@@ -80,12 +99,12 @@ public class PublicDataClient {
       @JsonProperty("item")
       private List<Item> items;
 
-      public Flux<HolidayDto> toDtoFlux() {
+      public List<HolidayDto> toDtos() {
         List<HolidayDto> holidayDtos = new ArrayList<>();
         for (Item item : this.getItems()) {
           holidayDtos.add(new HolidayDto(item.getDay(), item.getDateName()));
         }
-        return Flux.fromIterable(holidayDtos);
+        return holidayDtos;
       }
     }
 

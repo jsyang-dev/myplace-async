@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import info.myplace.api.place.dto.HolidayDto;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +38,7 @@ public class HolidayClient {
         .get()
         .uri(
             uriBuilder ->
-                UriComponentsBuilder.fromUri(uriBuilder.path("/getRestDeInfo").build())
+                UriComponentsBuilder.fromUri(uriBuilder.path("/getRestDeInfo1").build())
                     .queryParam("solYear", year)
                     .queryParam("solMonth", month)
                     .queryParam("ServiceKey", key)
@@ -44,12 +46,11 @@ public class HolidayClient {
                     .queryParam("numOfRows", 100)
                     .build(true)
                     .toUri())
-        .exchange()
-        .flatMap(
-            clientResponse ->
-                clientResponse
-                    .bodyToMono(ResponseDto.class)
-                    .map(responseDto -> responseDto.getResponse().getBody().getResult().toDtos()))
+        .retrieve()
+        .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(RuntimeException::new))
+        .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(RuntimeException::new))
+        .bodyToMono(ResponseDto.class)
+        .map(responseDto -> responseDto.getResponse().getBody().getResult().toDtos())
         .flatMapMany(Flux::fromIterable);
   }
 

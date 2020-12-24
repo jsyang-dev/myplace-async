@@ -19,4 +19,6 @@ public interface HolidayService {
   void delete(long id);
 
   Flux<HolidayDto> generate(int year);
+
+  Flux<HolidayDto> generate(int year, int month);
 }

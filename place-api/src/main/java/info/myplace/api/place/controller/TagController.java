@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/tags")
 @RequiredArgsConstructor
 public class TagController {
 

@@ -71,6 +71,11 @@ public class HolidayServiceImpl implements HolidayService {
     return holidayClient.getHolidayList(year);
   }
 
+  @Override
+  public Flux<HolidayDto> generate(int year, int month) {
+    return holidayClient.getHolidayList(year, month);
+  }
+
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {
     return Flux.concat(
         getHolidayDtoFluxByPeriod(startDate, endDate),

@@ -38,9 +38,9 @@ public class HolidayClient {
         .get()
         .uri(
             uriBuilder ->
-                UriComponentsBuilder.fromUri(uriBuilder.path("/getRestDeInfo1").build())
+                UriComponentsBuilder.fromUri(uriBuilder.path("/getRestDeInfo").build())
                     .queryParam("solYear", year)
-                    .queryParam("solMonth", month)
+                    .queryParam("solMonth", (month == null ? month : String.format("%02d", month)))
                     .queryParam("ServiceKey", key)
                     .queryParam("_type", "json")
                     .queryParam("numOfRows", 100)

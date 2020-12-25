@@ -203,4 +203,38 @@ class HolidayServiceTest {
       }
     }
   }
+
+  @Nested
+  @DisplayName("generate 메소드는")
+  class Generate {
+
+    @Test
+    @DisplayName("연도를 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYear() {
+
+      // Given
+      int year = 2020;
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year);
+
+      // Then
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
+    }
+
+    @Test
+    @DisplayName("연도, 월을 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYearAndMonth() {
+
+      // Given
+      int year = 2020;
+      int month = 1;
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year, month);
+
+      // Then
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
+    }
+  }
 }

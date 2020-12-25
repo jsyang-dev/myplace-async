@@ -19,3 +19,9 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+
+app:
+  api:
+    holiday:
+      url: http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService
+      key: XQIRNsqPxWnJCLc6bRwj1ZBDJ2qPqU9QhiseMdL9ETWxJN0ZwuGBTkWYzh4Hi9Zq4Ov8z24OQRuE8sp40r%2BXFA%3D%3D

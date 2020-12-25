@@ -17,4 +17,8 @@ public interface HolidayService {
   Mono<HolidayDto> update(long id, HolidayDto holidayDto);
 
   void delete(long id);
+
+  Flux<HolidayDto> generate(int year);
+
+  Flux<HolidayDto> generate(int year, int month);
 }

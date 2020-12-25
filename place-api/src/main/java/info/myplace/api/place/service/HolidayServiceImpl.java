@@ -1,10 +1,12 @@
 package info.myplace.api.place.service;
 
+import info.myplace.api.place.client.HolidayClient;
 import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.exception.HolidayNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -19,6 +21,10 @@ public class HolidayServiceImpl implements HolidayService {
 
   private final HolidayRepository holidayRepository;
   private final HolidayMapper holidayMapper;
+  private final HolidayClient holidayClient;
+
+  @Value("${app.api.holiday.url}")
+  private String url;
 
   @Override
   @Transactional
@@ -54,8 +60,20 @@ public class HolidayServiceImpl implements HolidayService {
   }
 
   @Override
+  @Transactional
   public void delete(long id) {
     holidayRepository.deleteById(id);
+  }
+
+  @Override
+  @Transactional
+  public Flux<HolidayDto> generate(int year) {
+    return holidayClient.getHolidayList(year);
+  }
+
+  @Override
+  public Flux<HolidayDto> generate(int year, int month) {
+    return holidayClient.getHolidayList(year, month);
   }
 
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {

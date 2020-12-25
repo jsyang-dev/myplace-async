@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/holiday")
+@RequestMapping("/holidays")
 @RequiredArgsConstructor
 public class HolidayController {
 
@@ -29,7 +29,7 @@ public class HolidayController {
   public Mono<ResponseEntity<HolidayDto>> create(@RequestBody HolidayDto holidayDto) {
     return holidayService
         .create(holidayDto)
-        .map(h -> ResponseEntity.created(URI.create("/holiday/" + h.getId())).body(h))
+        .map(h -> ResponseEntity.created(URI.create("/holidays/" + h.getId())).body(h))
         .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 
@@ -52,5 +52,10 @@ public class HolidayController {
   @DeleteMapping("/{id}")
   public void delete(@PathVariable long id) {
     holidayService.delete(id);
+  }
+
+  @PostMapping("/actions/generate/{year}/{month}")
+  public Flux<HolidayDto> generate(@PathVariable int year, @PathVariable int month) {
+    return holidayService.generate(year, month);
   }
 }

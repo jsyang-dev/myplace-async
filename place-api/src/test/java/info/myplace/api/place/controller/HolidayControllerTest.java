@@ -35,7 +35,7 @@ class HolidayControllerTest {
   @MockBean private HolidayService holidayService;
 
   @Nested
-  @DisplayName("POST /holiday 요청은")
+  @DisplayName("POST /holidays 요청은")
   class Create {
 
     @Test
@@ -50,7 +50,7 @@ class HolidayControllerTest {
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri("/holiday")
+              .uri("/holidays")
               .body(Mono.just(holidayDto), HolidayDto.class)
               .exchange();
 
@@ -69,7 +69,7 @@ class HolidayControllerTest {
   }
 
   @Nested
-  @DisplayName("GET /holiday 요청은")
+  @DisplayName("GET /holidays 요청은")
   class Get {
 
     @Test
@@ -81,7 +81,12 @@ class HolidayControllerTest {
           Arrays.asList(
               HolidayDto.builder().id(1L).date(LocalDate.of(1900, 1, 1)).name("설날").build(),
               HolidayDto.builder().id(2L).date(LocalDate.of(1900, 1, 1)).name("신정").build());
-      given(holidayService.getList(1900, 1, 1)).willReturn(Flux.fromIterable(holidayDtos));
+      given(
+              holidayService.getList(
+                  holidayDtos.get(0).getDate().getYear(),
+                  holidayDtos.get(0).getDate().getMonthValue(),
+                  holidayDtos.get(0).getDate().getDayOfMonth()))
+          .willReturn(Flux.fromIterable(holidayDtos));
 
       // When
       WebTestClient.ResponseSpec responseSpec =
@@ -90,10 +95,10 @@ class HolidayControllerTest {
               .uri(
                   uriBuilder ->
                       uriBuilder
-                          .path("/holiday")
+                          .path("/holidays")
                           .queryParam("year", holidayDtos.get(0).getDate().getYear())
-                          .queryParam("month", holidayDtos.get(0).getDate().getYear())
-                          .queryParam("day", holidayDtos.get(0).getDate().getYear())
+                          .queryParam("month", holidayDtos.get(0).getDate().getMonthValue())
+                          .queryParam("day", holidayDtos.get(0).getDate().getDayOfMonth())
                           .build())
               .exchange();
 
@@ -104,7 +109,101 @@ class HolidayControllerTest {
           .expectHeader()
           .contentType(MediaType.APPLICATION_JSON)
           .expectBody()
-          .jsonPath("$", hasSize(2));
+          .jsonPath("$", hasSize(holidayDtos.size()));
+    }
+  }
+
+  @Nested
+  @DisplayName("PUT /holidays 요청은")
+  class Update {
+
+    @Test
+    @DisplayName("id와 dto를 입력받아서 수정하고 dto를 리턴한다")
+    void update() {
+
+      // Given
+      HolidayDto holidayDto = HolidayDto.builder().id(1L).date(LocalDate.now()).name("공휴일").build();
+      given(holidayService.update(holidayDto.getId(), holidayDto))
+          .willReturn(Mono.just(holidayDto));
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .put()
+              .uri("/holidays/{id}", holidayDto.getId())
+              .body(Mono.just(holidayDto), HolidayDto.class)
+              .exchange();
+
+      // Then
+      responseSpec
+          .expectStatus()
+          .isOk()
+          .expectHeader()
+          .contentType(MediaType.APPLICATION_JSON)
+          .expectBody()
+          .jsonPath("$.id")
+          .isEqualTo(holidayDto.getId())
+          .jsonPath("$.date")
+          .isEqualTo(holidayDto.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+          .jsonPath("$.name")
+          .isEqualTo(holidayDto.getName());
+    }
+  }
+
+  @Nested
+  @DisplayName("DELETE /holidays 요청은")
+  class Delete {
+
+    @Test
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
+    void delete() {
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient.delete().uri("/holidays/{id}", 1L).exchange();
+
+      // Then
+      responseSpec.expectStatus().isOk().expectBody().isEmpty();
+    }
+  }
+
+  @Nested
+  @DisplayName("GET /holidays/actions/generate 요청은")
+  class Generate {
+
+    @Test
+    @DisplayName("연도, 월을 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYearAndMonth() {
+
+      // Given
+      List<HolidayDto> holidayDtos =
+          Arrays.asList(
+              HolidayDto.builder().id(1L).date(LocalDate.of(1900, 1, 1)).name("설날").build(),
+              HolidayDto.builder().id(2L).date(LocalDate.of(1900, 1, 1)).name("신정").build());
+      given(
+              holidayService.generate(
+                  holidayDtos.get(0).getDate().getYear(),
+                  holidayDtos.get(0).getDate().getMonthValue()))
+          .willReturn(Flux.fromIterable(holidayDtos));
+
+      // When
+      WebTestClient.ResponseSpec responseSpec =
+          webTestClient
+              .post()
+              .uri(
+                  "/holidays/actions/generate/{year}/{month}",
+                  holidayDtos.get(0).getDate().getYear(),
+                  holidayDtos.get(0).getDate().getMonthValue())
+              .exchange();
+
+      // Then
+      responseSpec
+          .expectStatus()
+          .isOk()
+          .expectHeader()
+          .contentType(MediaType.APPLICATION_JSON)
+          .expectBody()
+          .jsonPath("$", hasSize(holidayDtos.size()));
     }
   }
 }

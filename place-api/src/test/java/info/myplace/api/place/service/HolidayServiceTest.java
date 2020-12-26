@@ -1,6 +1,8 @@
 package info.myplace.api.place.service;
 
+import info.myplace.api.place.domain.Holiday;
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.exception.HolidayNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -129,6 +132,109 @@ class HolidayServiceTest {
 
       // Then
       StepVerifier.create(holidayDtoFlux).expectNextMatches(holidayDtos::contains).verifyComplete();
+    }
+  }
+
+  @Nested
+  @DisplayName("update 메소드는")
+  class Update {
+
+    @Test
+    @DisplayName("id와 dto를 입력받아서 수정하고 dto를 리턴한다")
+    void update() {
+
+      // Given
+      Holiday holiday = Holiday.builder().date(LocalDate.now()).name("공휴일").build();
+      HolidayDto holidayDto = holidayMapper.toDto(holidayRepository.save(holiday));
+      holidayDto.setDate(LocalDate.of(1900, 3, 1));
+      holidayDto.setName("삼일절");
+
+      // When
+      Mono<HolidayDto> holidayDtoMono = holidayService.update(holiday.getId(), holidayDto);
+
+      // Then
+      StepVerifier.create(holidayDtoMono)
+          .assertNext(
+              t -> {
+                assertThat(t.getId()).isEqualTo(holiday.getId());
+                assertThat(t.getDate()).isEqualTo(holidayDto.getDate());
+                assertThat(t.getName()).isEqualTo(holidayDto.getName());
+              })
+          .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 요청받아서 예외를 발생한다")
+    void holidayNotFoundException() {
+
+      // Given
+      Holiday holiday = Holiday.builder().date(LocalDate.now()).name("공휴일").build();
+      HolidayDto holidayDto = holidayMapper.toDto(holidayRepository.save(holiday));
+      holidayDto.setDate(LocalDate.of(1900, 3, 1));
+      holidayDto.setName("삼일절");
+      long id = 0L;
+
+      // When & Then
+      assertThatThrownBy(() -> holidayService.update(id, holidayDto))
+          .isInstanceOf(HolidayNotFoundException.class)
+          .hasMessageContaining("유효한 Holiday가 존재하지 않습니다")
+          .hasMessageContaining(String.valueOf(id));
+    }
+  }
+
+  @Nested
+  @DisplayName("delete 메소드는")
+  class Delete {
+
+    @Test
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
+    void delete() {
+
+      // Given
+      Holiday holiday =
+          holidayRepository.save(Holiday.builder().date(LocalDate.now()).name("공휴일").build());
+
+      // When
+      holidayService.delete(holiday.getId());
+
+      // Then
+      if (holidayRepository.findById(holiday.getId()).isPresent()) {
+        throw new AssertionError("Test failed");
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("generate 메소드는")
+  class Generate {
+
+    @Test
+    @DisplayName("연도를 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYear() {
+
+      // Given
+      int year = 2020;
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year);
+
+      // Then
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
+    }
+
+    @Test
+    @DisplayName("연도, 월을 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYearAndMonth() {
+
+      // Given
+      int year = 2020;
+      int month = 1;
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year, month);
+
+      // Then
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
     }
   }
 }

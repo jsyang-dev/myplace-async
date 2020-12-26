@@ -6,6 +6,7 @@ import info.myplace.api.place.mapper.TagMapper;
 import info.myplace.api.place.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,7 @@ public class TagServiceImpl implements TagService {
   private final TagMapper tagMapper;
 
   @Override
+  @Transactional
   public Mono<TagDto> create(TagDto tagDto) {
     return Mono.just(tagMapper.toEntity(tagDto)).map(tagRepository::save).map(tagMapper::toDto);
   }
@@ -33,6 +35,7 @@ public class TagServiceImpl implements TagService {
   }
 
   @Override
+  @Transactional
   public void delete(long id) {
     tagRepository.deleteById(id);
   }

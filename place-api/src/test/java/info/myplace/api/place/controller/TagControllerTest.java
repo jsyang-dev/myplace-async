@@ -20,10 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(TagController.class)
@@ -36,7 +33,7 @@ class TagControllerTest {
   @MockBean private TagService tagService;
 
   @Nested
-  @DisplayName("POST /tag 요청은")
+  @DisplayName("POST /tags 요청은")
   class Create {
 
     @Test
@@ -49,7 +46,7 @@ class TagControllerTest {
 
       // When
       WebTestClient.ResponseSpec responseSpec =
-          webTestClient.post().uri("/tag").body(Mono.just(tagDto), TagDto.class).exchange();
+          webTestClient.post().uri("/tags").body(Mono.just(tagDto), TagDto.class).exchange();
 
       // Then
       responseSpec
@@ -62,13 +59,11 @@ class TagControllerTest {
           .isEqualTo(tagDto.getId())
           .jsonPath("$.name")
           .isEqualTo(tagDto.getName());
-
-      verify(tagService, times(1)).create(any());
     }
   }
 
   @Nested
-  @DisplayName("GET /tag 요청은")
+  @DisplayName("GET /tags 요청은")
   class Get {
 
     @Test
@@ -81,7 +76,7 @@ class TagControllerTest {
 
       // When
       WebTestClient.ResponseSpec responseSpec =
-          webTestClient.get().uri("/tag/{id}", tagDto.getId()).exchange();
+          webTestClient.get().uri("/tags/{id}", tagDto.getId()).exchange();
 
       // Then
       responseSpec
@@ -115,7 +110,7 @@ class TagControllerTest {
               .uri(
                   uriBuilder ->
                       uriBuilder
-                          .path("/tag")
+                          .path("/tags")
                           .queryParam("keyword", tagDtos.get(0).getName().substring(0, 1))
                           .build())
               .exchange();
@@ -132,16 +127,16 @@ class TagControllerTest {
   }
 
   @Nested
-  @DisplayName("DELETE /tag 요청은")
+  @DisplayName("DELETE /tags 요청은")
   class Delete {
 
     @Test
-    @DisplayName("dto를 입력받아서 entity를 삭제한다")
+    @DisplayName("id를 입력받아서 entity를 삭제한다")
     void delete() {
 
       // When
       WebTestClient.ResponseSpec responseSpec =
-          webTestClient.delete().uri("/tag/{id}", 1L).exchange();
+          webTestClient.delete().uri("/tags/{id}", 1L).exchange();
 
       // Then
       responseSpec.expectStatus().isOk().expectBody().isEmpty();

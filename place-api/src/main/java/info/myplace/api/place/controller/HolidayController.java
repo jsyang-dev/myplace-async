@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -26,7 +27,7 @@ public class HolidayController {
   private final HolidayService holidayService;
 
   @PostMapping
-  public Mono<ResponseEntity<HolidayDto>> create(@RequestBody HolidayDto holidayDto) {
+  public Mono<ResponseEntity<HolidayDto>> create(@RequestBody @Valid HolidayDto holidayDto) {
     return holidayService
         .create(holidayDto)
         .map(h -> ResponseEntity.created(URI.create("/holidays/" + h.getId())).body(h))
@@ -42,7 +43,7 @@ public class HolidayController {
 
   @PutMapping("/{id}")
   public Mono<ResponseEntity<HolidayDto>> update(
-      @PathVariable long id, @RequestBody HolidayDto holidayDto) {
+      @PathVariable long id, @RequestBody @Valid HolidayDto holidayDto) {
     return holidayService
         .update(id, holidayDto)
         .map(ResponseEntity::ok)

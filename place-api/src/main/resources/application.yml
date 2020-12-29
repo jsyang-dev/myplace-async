@@ -1,5 +1,9 @@
 server:
   port: 8081
+  error:
+    include-exception: true
+    include-message: always
+    include-binding-errors: always
 
 spring:
   application:

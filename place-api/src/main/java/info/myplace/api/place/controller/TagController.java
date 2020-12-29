@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -25,7 +26,7 @@ public class TagController {
   private final TagService tagService;
 
   @PostMapping
-  public Mono<ResponseEntity<TagDto>> create(@RequestBody TagDto tagDto) {
+  public Mono<ResponseEntity<TagDto>> create(@RequestBody @Valid TagDto tagDto) {
     return tagService
         .create(tagDto)
         .map(t -> ResponseEntity.created(URI.create("/tag/" + t.getId())).body(t))

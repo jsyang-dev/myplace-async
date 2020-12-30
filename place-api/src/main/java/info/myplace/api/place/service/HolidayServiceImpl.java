@@ -73,7 +73,15 @@ public class HolidayServiceImpl implements HolidayService {
 
   @Override
   public Flux<HolidayDto> generate(int year, int month) {
-    return holidayClient.getHolidayList(year, month);
+
+    Flux<HolidayDto> holidayDtoFlux = holidayClient.getHolidayList(year, month);
+
+    // TODO: Flux 순서 해결
+    holidayDtoFlux
+        .map(holidayMapper::toEntity)
+        .subscribe(entity -> System.out.println("1" + holidayRepository.save(entity)));
+
+    return holidayDtoFlux;
   }
 
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {

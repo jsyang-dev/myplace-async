@@ -234,6 +234,23 @@ class HolidayServiceTest {
       Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year, month);
 
       // Then
+      holidayDtoFlux.subscribe(System.out::println);
+      StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
+    }
+
+    @Test
+    @DisplayName("연도, 월을 입력받아서 리스트를 재생성하고 예외없이 리턴한다")
+    void duplicateGenerateWithYearAndMonth() {
+
+      // Given
+      int year = 2020;
+      int month = 1;
+      holidayService.generate(year, month);
+
+      // When
+      Flux<HolidayDto> holidayDtoFlux = holidayService.generate(year, month);
+
+      // Then
       StepVerifier.create(holidayDtoFlux).expectNextCount(1).thenCancel().verify();
     }
   }

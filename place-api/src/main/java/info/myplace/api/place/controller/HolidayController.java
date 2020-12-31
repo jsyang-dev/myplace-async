@@ -1,6 +1,7 @@
 package info.myplace.api.place.controller;
 
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.dto.HolidayGenerateDto;
 import info.myplace.api.place.service.HolidayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +56,8 @@ public class HolidayController {
     holidayService.delete(id);
   }
 
-  @PostMapping("/actions/generate/{year}/{month}")
-  public Flux<HolidayDto> generate(@PathVariable int year, @PathVariable int month) {
-    return holidayService.generate(year, month);
+  @PostMapping("/generate")
+  public Flux<HolidayDto> generate(@RequestBody @Valid HolidayGenerateDto holidayGenerateDto) {
+    return holidayService.generate(holidayGenerateDto);
   }
 }

@@ -1,6 +1,7 @@
 package info.myplace.api.place.controller;
 
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.dto.HolidayGenerateDto;
 import info.myplace.api.place.service.HolidayService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -168,12 +169,12 @@ class HolidayControllerTest {
   }
 
   @Nested
-  @DisplayName("GET /holidays/actions/generate 요청은")
+  @DisplayName("POST /holidays/generate 요청은")
   class Generate {
 
     @Test
-    @DisplayName("연도, 월을 입력받아서 리스트를 생성하고 리턴한다")
-    void generateWithYearAndMonth() {
+    @DisplayName("연도를 입력받아서 리스트를 생성하고 리턴한다")
+    void generateWithYear() {
 
       // Given
       List<HolidayDto> holidayDtos =
@@ -182,18 +183,22 @@ class HolidayControllerTest {
               HolidayDto.builder().id(2L).date(LocalDate.of(1900, 1, 1)).name("신정").build());
       given(
               holidayService.generate(
-                  holidayDtos.get(0).getDate().getYear(),
-                  holidayDtos.get(0).getDate().getMonthValue()))
+                  HolidayGenerateDto.builder()
+                      .year(holidayDtos.get(0).getDate().getYear())
+                      .build()))
           .willReturn(Flux.fromIterable(holidayDtos));
 
       // When
       WebTestClient.ResponseSpec responseSpec =
           webTestClient
               .post()
-              .uri(
-                  "/holidays/actions/generate/{year}/{month}",
-                  holidayDtos.get(0).getDate().getYear(),
-                  holidayDtos.get(0).getDate().getMonthValue())
+              .uri("/holidays/generate")
+              .body(
+                  Mono.just(
+                      HolidayGenerateDto.builder()
+                          .year(holidayDtos.get(0).getDate().getYear())
+                          .build()),
+                  HolidayGenerateDto.class)
               .exchange();
 
       // Then

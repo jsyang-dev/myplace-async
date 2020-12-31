@@ -1,6 +1,7 @@
 package info.myplace.api.place.service;
 
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.dto.HolidayGenerateDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,5 @@ public interface HolidayService {
 
   void delete(long id);
 
-  Flux<HolidayDto> generate(int year);
-
-  Flux<HolidayDto> generate(int year, int month);
+  Flux<HolidayDto> generate(HolidayGenerateDto holidayGenerateDto);
 }

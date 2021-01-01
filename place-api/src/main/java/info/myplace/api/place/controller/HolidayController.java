@@ -1,6 +1,7 @@
 package info.myplace.api.place.controller;
 
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.dto.HolidayGenerateDto;
 import info.myplace.api.place.service.HolidayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -26,7 +28,7 @@ public class HolidayController {
   private final HolidayService holidayService;
 
   @PostMapping
-  public Mono<ResponseEntity<HolidayDto>> create(@RequestBody HolidayDto holidayDto) {
+  public Mono<ResponseEntity<HolidayDto>> create(@RequestBody @Valid HolidayDto holidayDto) {
     return holidayService
         .create(holidayDto)
         .map(h -> ResponseEntity.created(URI.create("/holidays/" + h.getId())).body(h))
@@ -35,14 +37,14 @@ public class HolidayController {
 
   // TODO: ResponseEntity 적용
   @GetMapping
-  public Flux<HolidayDto> getList(
+  public Flux<HolidayDto> readList(
       @RequestParam int year, @RequestParam int month, @RequestParam int day) {
-    return holidayService.getList(year, month, day);
+    return holidayService.readList(year, month, day);
   }
 
   @PutMapping("/{id}")
   public Mono<ResponseEntity<HolidayDto>> update(
-      @PathVariable long id, @RequestBody HolidayDto holidayDto) {
+      @PathVariable long id, @RequestBody @Valid HolidayDto holidayDto) {
     return holidayService
         .update(id, holidayDto)
         .map(ResponseEntity::ok)
@@ -54,8 +56,8 @@ public class HolidayController {
     holidayService.delete(id);
   }
 
-  @PostMapping("/actions/generate/{year}/{month}")
-  public Flux<HolidayDto> generate(@PathVariable int year, @PathVariable int month) {
-    return holidayService.generate(year, month);
+  @PostMapping("/generate")
+  public Flux<HolidayDto> generate(@RequestBody @Valid HolidayGenerateDto holidayGenerateDto) {
+    return holidayService.generate(holidayGenerateDto);
   }
 }

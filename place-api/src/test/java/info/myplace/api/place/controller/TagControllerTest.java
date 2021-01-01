@@ -64,15 +64,15 @@ class TagControllerTest {
 
   @Nested
   @DisplayName("GET /tags 요청은")
-  class Get {
+  class Read {
 
     @Test
     @DisplayName("id를 입력받아서 조회한 dto를 리턴한다")
-    void get() {
+    void read() {
 
       // Given
       TagDto tagDto = TagDto.builder().id(1L).name("태그").build();
-      given(tagService.get(tagDto.getId())).willReturn(Mono.just(tagDto));
+      given(tagService.read(tagDto.getId())).willReturn(Mono.just(tagDto));
 
       // When
       WebTestClient.ResponseSpec responseSpec =
@@ -100,7 +100,7 @@ class TagControllerTest {
           Arrays.asList(
               TagDto.builder().id(1L).name("태그1").build(),
               TagDto.builder().id(2L).name("태그2").build());
-      given(tagService.getByKeyword(tagDtos.get(0).getName().substring(0, 1)))
+      given(tagService.readByKeyword(tagDtos.get(0).getName().substring(0, 1)))
           .willReturn(Flux.fromIterable(tagDtos));
 
       // When

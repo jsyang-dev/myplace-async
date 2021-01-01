@@ -1,5 +1,9 @@
 server:
   port: 8081
+  error:
+    include-exception: true
+    include-message: always
+    include-binding-errors: always
 
 spring:
   application:
@@ -7,6 +11,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
@@ -19,6 +25,8 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+  reactor.netty.http.client: debug
+  info.myplace.api.place: debug
 
 app:
   api:

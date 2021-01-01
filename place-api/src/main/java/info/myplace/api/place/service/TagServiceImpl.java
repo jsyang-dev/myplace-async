@@ -24,13 +24,13 @@ public class TagServiceImpl implements TagService {
   }
 
   @Override
-  public Mono<TagDto> get(long id) {
+  public Mono<TagDto> read(long id) {
     return Mono.just(tagRepository.findById(id).orElseThrow(() -> new TagNotFoundException(id)))
         .map(tagMapper::toDto);
   }
 
   @Override
-  public Flux<TagDto> getByKeyword(String keyword) {
+  public Flux<TagDto> readByKeyword(String keyword) {
     return Flux.fromIterable(tagRepository.findByNameStartsWith(keyword)).map(tagMapper::toDto);
   }
 

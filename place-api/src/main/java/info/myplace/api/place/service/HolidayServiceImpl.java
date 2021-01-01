@@ -2,11 +2,11 @@ package info.myplace.api.place.service;
 
 import info.myplace.api.place.client.HolidayClient;
 import info.myplace.api.place.dto.HolidayDto;
+import info.myplace.api.place.dto.HolidayGenerateDto;
 import info.myplace.api.place.exception.HolidayNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -23,9 +23,6 @@ public class HolidayServiceImpl implements HolidayService {
   private final HolidayMapper holidayMapper;
   private final HolidayClient holidayClient;
 
-  @Value("${app.api.holiday.url}")
-  private String url;
-
   @Override
   @Transactional
   public Mono<HolidayDto> create(HolidayDto holidayDto) {
@@ -35,18 +32,17 @@ public class HolidayServiceImpl implements HolidayService {
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year) {
-    return getHolidayDtoFlux(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
+  public Flux<HolidayDto> readList(int year) {
+    return getHolidayDtoFlux(getStartDateOfYear(year), getEndDateOfYear(year));
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year, int month) {
-    return getHolidayDtoFlux(
-        LocalDate.of(year, month, 1), YearMonth.of(year, month).atEndOfMonth());
+  public Flux<HolidayDto> readList(int year, int month) {
+    return getHolidayDtoFlux(getStartDateOfMonth(year, month), getEndDateOfMonth(year, month));
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year, int month, int day) {
+  public Flux<HolidayDto> readList(int year, int month, int day) {
     return getHolidayDtoFlux(LocalDate.of(year, month, day), LocalDate.of(year, month, day));
   }
 
@@ -67,13 +63,22 @@ public class HolidayServiceImpl implements HolidayService {
 
   @Override
   @Transactional
-  public Flux<HolidayDto> generate(int year) {
-    return holidayClient.getHolidayList(year);
-  }
+  public Flux<HolidayDto> generate(HolidayGenerateDto holidayGenerateDto) {
 
-  @Override
-  public Flux<HolidayDto> generate(int year, int month) {
-    return holidayClient.getHolidayList(year, month);
+    int year = holidayGenerateDto.getYear();
+    int month = holidayGenerateDto.getMonth();
+
+    if (month > 0) {
+      holidayRepository.deleteByDateBetween(
+          getStartDateOfMonth(year, month), getEndDateOfMonth(year, month));
+    } else {
+      holidayRepository.deleteByDateBetween(getStartDateOfYear(year), getEndDateOfYear(year));
+    }
+
+    Flux<HolidayDto> holidayDtoFlux = holidayClient.getHolidayList(year, month);
+    holidayDtoFlux.map(holidayMapper::toEntity).subscribe(holidayRepository::save);
+
+    return holidayDtoFlux;
   }
 
   private Flux<HolidayDto> getHolidayDtoFlux(LocalDate startDate, LocalDate endDate) {
@@ -83,7 +88,23 @@ public class HolidayServiceImpl implements HolidayService {
   }
 
   private Flux<HolidayDto> getHolidayDtoFluxByPeriod(LocalDate startDate, LocalDate endDate) {
-    return Flux.fromIterable(holidayRepository.findByPeriod(startDate, endDate))
+    return Flux.fromIterable(holidayRepository.findByDateBetween(startDate, endDate))
         .map(holidayMapper::toDto);
+  }
+
+  private LocalDate getStartDateOfMonth(int year, int month) {
+    return LocalDate.of(year, month, 1);
+  }
+
+  private LocalDate getEndDateOfMonth(int year, int month) {
+    return YearMonth.of(year, month).atEndOfMonth();
+  }
+
+  private LocalDate getStartDateOfYear(int year) {
+    return LocalDate.of(year, 1, 1);
+  }
+
+  private LocalDate getEndDateOfYear(int year) {
+    return LocalDate.of(year, 12, 31);
   }
 }

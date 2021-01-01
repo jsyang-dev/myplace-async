@@ -63,18 +63,18 @@ class TagServiceTest {
   }
 
   @Nested
-  @DisplayName("get 메소드는")
-  class Get {
+  @DisplayName("read 메소드는")
+  class Read {
 
     @Test
     @DisplayName("id를 입력받아서 조회한 dto를 리턴한다")
-    void get() {
+    void read() {
 
       // Given
       Tag tag = tagRepository.save(Tag.builder().name("태그").build());
 
       // When
-      Mono<TagDto> tagDtoMono = tagService.get(tag.getId());
+      Mono<TagDto> tagDtoMono = tagService.read(tag.getId());
 
       // Then
       StepVerifier.create(tagDtoMono)
@@ -94,7 +94,7 @@ class TagServiceTest {
       long id = 0L;
 
       // When & Then
-      assertThatThrownBy(() -> tagService.get(id))
+      assertThatThrownBy(() -> tagService.read(id))
           .isInstanceOf(TagNotFoundException.class)
           .hasMessageContaining("유효한 Tag가 존재하지 않습니다")
           .hasMessageContaining(String.valueOf(id));
@@ -102,12 +102,12 @@ class TagServiceTest {
   }
 
   @Nested
-  @DisplayName("getByKeyword 메소드는")
-  class GetByKeyword {
+  @DisplayName("readByKeyword 메소드는")
+  class ReadByKeyword {
 
     @Test
     @DisplayName("keyword를 입력받아서 조회한 dto 리스트를 리턴한다")
-    void getByKeyword() {
+    void readByKeyword() {
 
       // Given
       List<TagDto> tagDtos =
@@ -116,7 +116,7 @@ class TagServiceTest {
       tagRepository.saveAll(tagDtos.stream().map(tagMapper::toEntity).collect(Collectors.toList()));
 
       // When
-      Flux<TagDto> tagDtoFlux = tagService.getByKeyword(tagDtos.get(0).getName().substring(0, 1));
+      Flux<TagDto> tagDtoFlux = tagService.readByKeyword(tagDtos.get(0).getName().substring(0, 1));
 
       // Then
       StepVerifier.create(tagDtoFlux).expectNextCount(2).verifyComplete();

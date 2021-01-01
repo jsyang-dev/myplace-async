@@ -8,9 +8,9 @@ public interface TagService {
 
   Mono<TagDto> create(TagDto tagDto);
 
-  Mono<TagDto> get(long id);
+  Mono<TagDto> read(long id);
 
-  Flux<TagDto> getByKeyword(String keyword);
+  Flux<TagDto> readByKeyword(String keyword);
 
   void delete(long id);
 }

@@ -37,9 +37,9 @@ public class HolidayController {
 
   // TODO: ResponseEntity 적용
   @GetMapping
-  public Flux<HolidayDto> getList(
+  public Flux<HolidayDto> readList(
       @RequestParam int year, @RequestParam int month, @RequestParam int day) {
-    return holidayService.getList(year, month, day);
+    return holidayService.readList(year, month, day);
   }
 
   @PutMapping("/{id}")

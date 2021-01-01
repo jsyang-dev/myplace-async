@@ -71,11 +71,11 @@ class HolidayControllerTest {
 
   @Nested
   @DisplayName("GET /holidays 요청은")
-  class Get {
+  class Read {
 
     @Test
     @DisplayName("연도, 월, 일을 입력받아서 조회한 dto 리스트를 리턴한다")
-    void getList() {
+    void readList() {
 
       // Given
       List<HolidayDto> holidayDtos =
@@ -83,7 +83,7 @@ class HolidayControllerTest {
               HolidayDto.builder().id(1L).date(LocalDate.of(1900, 1, 1)).name("설날").build(),
               HolidayDto.builder().id(2L).date(LocalDate.of(1900, 1, 1)).name("신정").build());
       given(
-              holidayService.getList(
+              holidayService.readList(
                   holidayDtos.get(0).getDate().getYear(),
                   holidayDtos.get(0).getDate().getMonthValue(),
                   holidayDtos.get(0).getDate().getDayOfMonth()))

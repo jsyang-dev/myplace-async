@@ -34,17 +34,17 @@ public class TagController {
   }
 
   @GetMapping("/{id}")
-  public Mono<ResponseEntity<TagDto>> get(@PathVariable long id) {
+  public Mono<ResponseEntity<TagDto>> read(@PathVariable long id) {
     return tagService
-        .get(id)
+        .read(id)
         .map(ResponseEntity::ok)
         .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 
   // TODO: ResponseEntity 적용
   @GetMapping
-  public Flux<TagDto> getByKeyword(@RequestParam String keyword) {
-    return tagService.getByKeyword(keyword);
+  public Flux<TagDto> readByKeyword(@RequestParam String keyword) {
+    return tagService.readByKeyword(keyword);
     //        .map(ResponseEntity::ok)
     //        .defaultIfEmpty(ResponseEntity.noContent().build());
   }

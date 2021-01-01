@@ -9,11 +9,11 @@ public interface HolidayService {
 
   Mono<HolidayDto> create(HolidayDto holidayDto);
 
-  Flux<HolidayDto> getList(int year);
+  Flux<HolidayDto> readList(int year);
 
-  Flux<HolidayDto> getList(int year, int month);
+  Flux<HolidayDto> readList(int year, int month);
 
-  Flux<HolidayDto> getList(int year, int month, int day);
+  Flux<HolidayDto> readList(int year, int month, int day);
 
   Mono<HolidayDto> update(long id, HolidayDto holidayDto);
 

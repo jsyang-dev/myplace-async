@@ -7,7 +7,6 @@ import info.myplace.api.place.exception.HolidayNotFoundException;
 import info.myplace.api.place.mapper.HolidayMapper;
 import info.myplace.api.place.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -18,7 +17,6 @@ import java.time.YearMonth;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class HolidayServiceImpl implements HolidayService {
 
   private final HolidayRepository holidayRepository;
@@ -34,17 +32,17 @@ public class HolidayServiceImpl implements HolidayService {
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year) {
+  public Flux<HolidayDto> readList(int year) {
     return getHolidayDtoFlux(getStartDateOfYear(year), getEndDateOfYear(year));
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year, int month) {
+  public Flux<HolidayDto> readList(int year, int month) {
     return getHolidayDtoFlux(getStartDateOfMonth(year, month), getEndDateOfMonth(year, month));
   }
 
   @Override
-  public Flux<HolidayDto> getList(int year, int month, int day) {
+  public Flux<HolidayDto> readList(int year, int month, int day) {
     return getHolidayDtoFlux(LocalDate.of(year, month, day), LocalDate.of(year, month, day));
   }
 

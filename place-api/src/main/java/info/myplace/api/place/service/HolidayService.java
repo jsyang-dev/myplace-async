@@ -9,6 +9,8 @@ public interface HolidayService {
 
   Mono<HolidayDto> create(HolidayDto holidayDto);
 
+  Mono<HolidayDto> read(long id);
+
   Flux<HolidayDto> readList(int year);
 
   Flux<HolidayDto> readList(int year, int month);

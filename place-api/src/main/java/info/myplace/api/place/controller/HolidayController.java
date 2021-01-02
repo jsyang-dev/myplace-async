@@ -35,6 +35,14 @@ public class HolidayController {
         .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 
+  @GetMapping("/{id}")
+  public Mono<ResponseEntity<HolidayDto>> read(@PathVariable long id) {
+    return holidayService
+        .read(id)
+        .map(ResponseEntity::ok)
+        .defaultIfEmpty(ResponseEntity.noContent().build());
+  }
+
   // TODO: ResponseEntity 적용
   @GetMapping
   public Flux<HolidayDto> readList(

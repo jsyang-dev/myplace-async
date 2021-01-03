@@ -49,8 +49,10 @@ public class TagController {
     //        .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 
+  // TODO: 204 리턴 방법
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable long id) {
+  public Mono<Void> delete(@PathVariable long id) {
     tagService.delete(id);
+    return Mono.empty();
   }
 }

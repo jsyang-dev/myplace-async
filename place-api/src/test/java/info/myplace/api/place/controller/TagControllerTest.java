@@ -139,7 +139,7 @@ class TagControllerTest {
           webTestClient.delete().uri("/tags/{id}", 1L).exchange();
 
       // Then
-      responseSpec.expectStatus().isOk().expectBody().isEmpty();
+      responseSpec.expectStatus().isNoContent().expectBody().isEmpty();
     }
   }
 }

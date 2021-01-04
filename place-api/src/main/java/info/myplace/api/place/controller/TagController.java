@@ -3,6 +3,7 @@ package info.myplace.api.place.controller;
 import info.myplace.api.place.dto.TagDto;
 import info.myplace.api.place.service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,8 @@ public class TagController {
   }
 
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable long id) {
+  public Mono<ResponseEntity<Void>> delete(@PathVariable long id) {
     tagService.delete(id);
+    return Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
   }
 }

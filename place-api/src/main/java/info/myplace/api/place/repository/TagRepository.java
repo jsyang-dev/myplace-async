@@ -9,5 +9,5 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
   List<Tag> findByNameStartsWith(String keyword);
 
-  long deleteTagById(long id);
+  int deleteTagById(long id);
 }

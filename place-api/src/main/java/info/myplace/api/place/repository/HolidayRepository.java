@@ -11,4 +11,6 @@ public interface HolidayRepository extends JpaRepository<Holiday, Long> {
   List<Holiday> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
   void deleteByDateBetween(LocalDate startDate, LocalDate endDate);
+
+  int deleteTagById(long id);
 }

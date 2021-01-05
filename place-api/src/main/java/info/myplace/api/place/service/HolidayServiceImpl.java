@@ -65,7 +65,9 @@ public class HolidayServiceImpl implements HolidayService {
   @Override
   @Transactional
   public void delete(long id) {
-    holidayRepository.deleteById(id);
+    if (holidayRepository.deleteTagById(id) == 0) {
+      throw new HolidayNotFoundException(id);
+    }
   }
 
   @Override

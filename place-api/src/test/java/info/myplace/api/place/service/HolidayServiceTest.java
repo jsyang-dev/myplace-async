@@ -246,6 +246,20 @@ class HolidayServiceTest {
         throw new AssertionError("Test failed");
       }
     }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 요청받아서 예외를 발생한다")
+    void holidayNotFoundException() {
+
+      // Given
+      long id = 0L;
+
+      // When & Then
+      assertThatThrownBy(() -> holidayService.delete(id))
+          .isInstanceOf(HolidayNotFoundException.class)
+          .hasMessageContaining("유효한 Holiday가 존재하지 않습니다")
+          .hasMessageContaining(String.valueOf(id));
+    }
   }
 
   @Nested

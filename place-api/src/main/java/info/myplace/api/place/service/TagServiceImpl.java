@@ -37,6 +37,8 @@ public class TagServiceImpl implements TagService {
   @Override
   @Transactional
   public void delete(long id) {
-    tagRepository.deleteById(id);
+    if (tagRepository.deleteTagById(id) == 0) {
+      throw new TagNotFoundException(id);
+    }
   }
 }

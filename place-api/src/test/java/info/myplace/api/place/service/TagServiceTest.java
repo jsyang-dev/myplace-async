@@ -138,9 +138,21 @@ class TagServiceTest {
       tagService.delete(tag.getId());
 
       // Then
-      if (tagRepository.findById(tag.getId()).isPresent()) {
-        throw new AssertionError("Test failed");
-      }
+      assertThat(tagRepository.count()).isZero();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id를 요청받아서 예외를 발생한다")
+    void tagNotFoundException() {
+
+      // Given
+      long id = 0L;
+
+      // When & Then
+      assertThatThrownBy(() -> tagService.delete(id))
+          .isInstanceOf(TagNotFoundException.class)
+          .hasMessageContaining("유효한 Tag가 존재하지 않습니다")
+          .hasMessageContaining(String.valueOf(id));
     }
   }
 }

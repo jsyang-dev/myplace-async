@@ -32,6 +32,13 @@ public class HolidayServiceImpl implements HolidayService {
   }
 
   @Override
+  public Mono<HolidayDto> read(long id) {
+    return Mono.just(
+            holidayRepository.findById(id).orElseThrow(() -> new HolidayNotFoundException(id)))
+        .map(holidayMapper::toDto);
+  }
+
+  @Override
   public Flux<HolidayDto> readList(int year) {
     return getHolidayDtoFlux(getStartDateOfYear(year), getEndDateOfYear(year));
   }
@@ -58,7 +65,9 @@ public class HolidayServiceImpl implements HolidayService {
   @Override
   @Transactional
   public void delete(long id) {
-    holidayRepository.deleteById(id);
+    if (holidayRepository.deleteTagById(id) == 0) {
+      throw new HolidayNotFoundException(id);
+    }
   }
 
   @Override

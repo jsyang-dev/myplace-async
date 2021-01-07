@@ -63,7 +63,7 @@ class TagControllerTest {
   }
 
   @Nested
-  @DisplayName("GET /tags 요청은")
+  @DisplayName("GET /tags/{id} 요청은")
   class Read {
 
     @Test
@@ -127,7 +127,7 @@ class TagControllerTest {
   }
 
   @Nested
-  @DisplayName("DELETE /tags 요청은")
+  @DisplayName("DELETE /tags/{id} 요청은")
   class Delete {
 
     @Test
@@ -139,7 +139,7 @@ class TagControllerTest {
           webTestClient.delete().uri("/tags/{id}", 1L).exchange();
 
       // Then
-      responseSpec.expectStatus().isOk().expectBody().isEmpty();
+      responseSpec.expectStatus().isNoContent().expectBody().isEmpty();
     }
   }
 }

@@ -4,6 +4,7 @@ import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.dto.HolidayGenerateDto;
 import info.myplace.api.place.service.HolidayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,14 @@ public class HolidayController {
         .defaultIfEmpty(ResponseEntity.noContent().build());
   }
 
+  @GetMapping("/{id}")
+  public Mono<ResponseEntity<HolidayDto>> read(@PathVariable long id) {
+    return holidayService
+        .read(id)
+        .map(ResponseEntity::ok)
+        .defaultIfEmpty(ResponseEntity.noContent().build());
+  }
+
   // TODO: ResponseEntity 적용
   @GetMapping
   public Flux<HolidayDto> readList(
@@ -52,8 +61,9 @@ public class HolidayController {
   }
 
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable long id) {
+  public Mono<ResponseEntity<Void>> delete(@PathVariable long id) {
     holidayService.delete(id);
+    return Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
   }
 
   @PostMapping("/generate")

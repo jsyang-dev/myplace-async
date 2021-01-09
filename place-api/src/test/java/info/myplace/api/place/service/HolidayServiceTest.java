@@ -1,5 +1,6 @@
 package info.myplace.api.place.service;
 
+import info.myplace.api.place.config.HolidayServiceConfig;
 import info.myplace.api.place.domain.Holiday;
 import info.myplace.api.place.dto.HolidayDto;
 import info.myplace.api.place.dto.HolidayGenerateDto;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(HolidayServiceConfig.class)
 @DisplayName("HolidayService 클래스")
 class HolidayServiceTest {
 
